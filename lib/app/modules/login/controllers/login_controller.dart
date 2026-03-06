@@ -20,7 +20,7 @@ class LoginController extends GetxController {
   }
 
   void goToSignUp() {
-    Get.offAndToNamed(Routes.SIGNUP);
+    Get.offNamed(Routes.SIGNUP);
   }
 
   @override

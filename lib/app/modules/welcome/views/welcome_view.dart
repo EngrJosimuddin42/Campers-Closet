@@ -52,7 +52,7 @@ class WelcomeView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "I already have an account? ",
+                    "I already have an account",
                     style: AppTextStyles.title15_400(
                       color: AppColors.primaryText,
                     ),
@@ -60,13 +60,13 @@ class WelcomeView extends StatelessWidget {
                   GestureDetector(
                     onTap: () => Get.toNamed(Routes.LOGIN),
                     child: Container(
-                      width: 30.w,
-                      height: 30.h,
+                      width: 32.w,
+                      height: 32.h,
                       decoration: BoxDecoration(
                         color: AppColors.buttonPrimaryColor,
                         borderRadius: BorderRadius.circular(100.r),
                       ),
-                      child: const Icon(Icons.arrow_forward, color: Colors.white),
+                      child: const Icon(Icons.arrow_forward, size: 20, color: Colors.white),
                     ),
                   ),
                 ],
