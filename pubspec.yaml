@@ -17,6 +17,7 @@ dependencies:
   smooth_page_indicator: ^2.0.1
   exui: ^1.0.11
   pinput: ^6.0.2
+  carousel_slider: ^5.1.2
 
 dev_dependencies:
   flutter_test:

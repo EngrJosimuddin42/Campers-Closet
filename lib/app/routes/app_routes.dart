@@ -13,6 +13,7 @@ abstract class Routes {
   static const OTP = _Paths.OTP;
   static const RESET_VIEW = _Paths.RESET_VIEW;
   static const BACKLOGIN = _Paths.BACKLOGIN;
+  static const NAVBAR = _Paths.NAVBAR;
 }
 
 abstract class _Paths {
@@ -27,4 +28,5 @@ abstract class _Paths {
   static const OTP = '/otp';
   static const RESET_VIEW = '/reset-view';
   static const BACKLOGIN = '/backlogin';
+  static const NAVBAR = '/navbar';
 }
