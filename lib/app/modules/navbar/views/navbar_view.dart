@@ -1,5 +1,6 @@
 import 'package:campers_closet/app/constants/app_colors.dart';
 import 'package:campers_closet/app/constants/app_logos.dart';
+import 'package:campers_closet/app/modules/closet/views/closet_view.dart';
 import 'package:campers_closet/app/modules/home/views/home_view.dart';
 import 'package:campers_closet/app/modules/navbar/widgets/navbar.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class NavbarView extends StatelessWidget {
     // Swap placeholders with real screens as you build them
     final List<Widget> pages = [
       HomeView(),
-      Text('Closet Screen'),
+      ClosetView(),
       Text('Calendar Screen'),
       Text('Profile Screen'),
     ];
@@ -37,7 +38,7 @@ class NavbarView extends StatelessWidget {
             children: List.generate(pages.length, (i) {
               return Navigator(
                 key: ctrl.navKeys[i],
-                onGenerateInitialRoutes: (_, __) => [
+                onGenerateInitialRoutes: (_, _) => [
                   MaterialPageRoute(builder: (_) => pages[i]),
                 ],
               );

@@ -14,6 +14,7 @@ abstract class Routes {
   static const RESET_VIEW = _Paths.RESET_VIEW;
   static const BACKLOGIN = _Paths.BACKLOGIN;
   static const NAVBAR = _Paths.NAVBAR;
+  static const CLOSET = _Paths.CLOSET;
 }
 
 abstract class _Paths {
@@ -29,4 +30,5 @@ abstract class _Paths {
   static const RESET_VIEW = '/reset-view';
   static const BACKLOGIN = '/backlogin';
   static const NAVBAR = '/navbar';
+  static const CLOSET = '/closet';
 }

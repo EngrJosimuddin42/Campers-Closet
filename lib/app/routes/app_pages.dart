@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/closet/bindings/closet_binding.dart';
+import '../modules/closet/views/closet_view.dart';
 import '../modules/forget_password/bindings/forget_password_binding.dart';
 import '../modules/forget_password/views/back_login_view.dart';
 import '../modules/forget_password/views/otp_view.dart';
@@ -78,6 +80,11 @@ class AppPages {
       name: _Paths.NAVBAR,
       page: () => const NavbarView(),
       binding: NavbarBinding(),
+    ),
+    GetPage(
+      name: _Paths.CLOSET,
+      page: () => const ClosetView(),
+      binding: ClosetBinding(),
     ),
   ];
 }
