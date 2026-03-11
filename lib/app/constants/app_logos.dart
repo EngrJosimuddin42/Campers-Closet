@@ -29,4 +29,8 @@ class AppLogos {
   static const String toiletries = 'assets/logos/toiletries.svg';
   static const String search = 'assets/logos/search.svg';
   static const String template = 'assets/logos/template.svg';
+  static const String shop = 'assets/logos/shop.svg';
+  static const String addList = 'assets/logos/addList.svg';
+  static const String edit = 'assets/logos/edit.svg';
+  static const String trash = 'assets/logos/trash.svg';
 }

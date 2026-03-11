@@ -1,5 +1,8 @@
+import 'package:campers_closet/app/modules/scanner/views/scanner_screen.dart';
 import 'package:get/get.dart';
 
+import '../modules/calendar/bindings/calendar_binding.dart';
+import '../modules/calendar/views/calendar_view.dart';
 import '../modules/closet/bindings/closet_binding.dart';
 import '../modules/closet/views/closet_view.dart';
 import '../modules/forget_password/bindings/forget_password_binding.dart';
@@ -15,6 +18,9 @@ import '../modules/navbar/bindings/navbar_binding.dart';
 import '../modules/navbar/views/navbar_view.dart';
 import '../modules/onboarding/bindings/onboarding_binding.dart';
 import '../modules/onboarding/views/onboarding_view.dart';
+import '../modules/profile/bindings/profile_binding.dart';
+import '../modules/profile/views/profile_view.dart';
+import '../modules/scanner/bindings/scanner_binding.dart';
 import '../modules/signup/bindings/signup_binding.dart';
 import '../modules/signup/views/signup_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
@@ -27,7 +33,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.NAVBAR;
+  static const INITIAL = Routes.SPLASH;
 
   static final routes = [
     GetPage(name: _Paths.HOME, page: () => HomeView(), binding: HomeBinding()),
@@ -85,6 +91,21 @@ class AppPages {
       name: _Paths.CLOSET,
       page: () => const ClosetView(),
       binding: ClosetBinding(),
+    ),
+    GetPage(
+      name: _Paths.CALENDAR,
+      page: () => const CalendarView(),
+      binding: CalendarBinding(),
+    ),
+    GetPage(
+      name: _Paths.PROFILE,
+      page: () => const ProfileView(),
+      binding: ProfileBinding(),
+    ),
+    GetPage(
+      name: _Paths.SCANNER,
+      page: () => const ScannerView(),
+      binding: ScannerBinding(),
     ),
   ];
 }

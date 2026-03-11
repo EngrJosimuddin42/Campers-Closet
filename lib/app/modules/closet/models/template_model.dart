@@ -4,7 +4,8 @@ class TemplateModel {
   final String title;
   final String subtitle;
   final int itemCount;
-  final String iconCategory; 
+  final String iconCategory;
+  final String imageUrl;
 
   const TemplateModel({
     required this.id,
@@ -12,5 +13,6 @@ class TemplateModel {
     required this.subtitle,
     required this.itemCount,
     required this.iconCategory,
+    required this.imageUrl,
   });
 }

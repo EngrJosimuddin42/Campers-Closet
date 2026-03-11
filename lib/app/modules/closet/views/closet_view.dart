@@ -1,4 +1,6 @@
 import 'package:campers_closet/app/modules/closet/controllers/item_controller.dart';
+import 'package:campers_closet/app/modules/closet/views/my_list_view.dart';
+import 'package:campers_closet/app/modules/closet/views/template_screen.dart';
 import 'package:campers_closet/app/modules/closet/widgets/closet_header.dart';
 import 'package:campers_closet/app/modules/closet/widgets/filter_tab.dart';
 import 'package:campers_closet/app/modules/closet/widgets/item_grid.dart';
@@ -26,9 +28,9 @@ class ClosetView extends StatelessWidget {
               child: Obx(() {
                 switch (tabCtrl.selectedTab.value) {
                   case 1:
-                    return const Text('Templates');
+                    return TemplateView();
                   case 2:
-                    return const Text('My Lists');
+                    return MyListView();
                   default:
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

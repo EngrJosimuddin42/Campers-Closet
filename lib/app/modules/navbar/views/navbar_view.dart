@@ -1,8 +1,11 @@
 import 'package:campers_closet/app/constants/app_colors.dart';
 import 'package:campers_closet/app/constants/app_logos.dart';
+import 'package:campers_closet/app/modules/calendar/views/calendar_view.dart';
 import 'package:campers_closet/app/modules/closet/views/closet_view.dart';
 import 'package:campers_closet/app/modules/home/views/home_view.dart';
 import 'package:campers_closet/app/modules/navbar/widgets/navbar.dart';
+import 'package:campers_closet/app/modules/profile/views/personal_info_screen.dart';
+import 'package:campers_closet/app/modules/profile/views/profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/navbar_controller.dart';
@@ -20,14 +23,14 @@ class NavbarView extends StatelessWidget {
     final List<Widget> pages = [
       HomeView(),
       ClosetView(),
-      Text('Calendar Screen'),
-      Text('Profile Screen'),
+      CalendarView(),
+      ProfileView(),
     ];
 
     return PopScope(
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) {
-          // ctrl.handleBackPress();
+          ctrl.handleBackPress();
         }
       },
       child: Obx(
@@ -49,8 +52,7 @@ class NavbarView extends StatelessWidget {
             width: 68,
             height: 68,
             child: FloatingActionButton(
-              // onPressed: ctrl.onScanPressed,
-              onPressed: () {},
+              onPressed: ctrl.onScanPressed,
               elevation: 0,
               highlightElevation: 0,
               backgroundColor: AppColors.buttonPrimaryColor,

@@ -15,6 +15,9 @@ abstract class Routes {
   static const BACKLOGIN = _Paths.BACKLOGIN;
   static const NAVBAR = _Paths.NAVBAR;
   static const CLOSET = _Paths.CLOSET;
+  static const CALENDAR = _Paths.CALENDAR;
+  static const PROFILE = _Paths.PROFILE;
+  static const SCANNER = _Paths.SCANNER;
 }
 
 abstract class _Paths {
@@ -31,4 +34,7 @@ abstract class _Paths {
   static const BACKLOGIN = '/backlogin';
   static const NAVBAR = '/navbar';
   static const CLOSET = '/closet';
+  static const CALENDAR = '/calendar';
+  static const PROFILE = '/profile';
+  static const SCANNER = '/scanner';
 }

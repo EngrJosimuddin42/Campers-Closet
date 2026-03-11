@@ -1,3 +1,4 @@
+import 'package:campers_closet/app/modules/scanner/views/scanner_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -26,14 +27,13 @@ class NavbarController extends GetxController {
     }
   }
 
-  // void onScanPressed() {
-  //   print('Scan button pressed');
-  //   Get.to(
-  //     () => const ScannerScreen(),
-  //     transition: Transition.downToUp,
-  //     duration: const Duration(milliseconds: 300),
-  //   );
-  // }
+  void onScanPressed() {
+    Get.to(
+      () => const ScannerView(),
+      transition: Transition.downToUp,
+      duration: const Duration(milliseconds: 300),
+    );
+  }
 
   bool handleBackPress() {
     final currentKey = navKeys[selectedTab.value];
