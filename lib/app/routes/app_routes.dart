@@ -18,6 +18,7 @@ abstract class Routes {
   static const CALENDAR = _Paths.CALENDAR;
   static const PROFILE = _Paths.PROFILE;
   static const SCANNER = _Paths.SCANNER;
+  static const OTP_VERIFICATION = _Paths.OTP_VERIFICATION;
 }
 
 abstract class _Paths {
@@ -37,4 +38,5 @@ abstract class _Paths {
   static const CALENDAR = '/calendar';
   static const PROFILE = '/profile';
   static const SCANNER = '/scanner';
+  static const OTP_VERIFICATION = '/otp-verification';
 }

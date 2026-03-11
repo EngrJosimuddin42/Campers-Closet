@@ -1,4 +1,5 @@
 import 'package:campers_closet/app/modules/scanner/views/scanner_screen.dart';
+import 'package:campers_closet/app/modules/signup/views/otp_verification_view.dart';
 import 'package:get/get.dart';
 
 import '../modules/calendar/bindings/calendar_binding.dart';
@@ -55,6 +56,11 @@ class AppPages {
     GetPage(
       name: _Paths.SIGNUP,
       page: () => const SignupView(),
+      binding: SignupBinding(),
+    ),
+    GetPage(
+      name: _Paths.OTP_VERIFICATION,
+      page: () => const OtpVerificationView(),
       binding: SignupBinding(),
     ),
     GetPage(

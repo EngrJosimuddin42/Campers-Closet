@@ -11,8 +11,7 @@ class PersonalInfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ctrl = Get.find<PersonalInfoController>();
-
+    final PersonalInfoController ctrl = Get.put(PersonalInfoController());
     ctrl.fullNameController.text = 'Heather';
     ctrl.emailController.text = 'heather.parent@example.com';
     ctrl.dobController.text = '22/12/2026';
