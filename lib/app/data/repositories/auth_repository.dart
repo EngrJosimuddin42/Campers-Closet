@@ -9,19 +9,28 @@ class AuthRepository {
   final ApiService _apiService = ApiService();
   final TokenStorage _storage = TokenStorage();
 
-  Future login({required String email, required String password}) async {
+  Future<Map<String, dynamic>> login({
+    required String email,
+    required String password,
+  }) async {
     try {
       final response = await _apiService.post(
-        "/login",
+        ApiConstants.login,
         data: {"email": email, "password": password},
       );
 
-      final accessToken = response.data["access_token"];
-      final refreshToken = response.data["refresh_token"];
+      final bool success = response.data["success"] ?? false;
+      if (!success) {
+        throw response.data["message"] ?? "Login failed";
+      }
+
+      final data = response.data["data"];
+      final accessToken = data["access_token"];
+      final refreshToken = data["refresh_token"];
 
       _storage.saveTokens(accessToken, refreshToken);
 
-      return response.data;
+      return data;
     } on DioException catch (e) {
       throw handleDioError(e);
     }

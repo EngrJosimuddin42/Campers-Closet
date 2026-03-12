@@ -3,10 +3,10 @@ import 'package:campers_closet/app/constants/app_strings.dart';
 import 'package:campers_closet/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../models/onboarding_model.dart';
 
 class OnboardingController extends GetxController {
-  bool isLoggedIn = false;
   final PageController pageController = PageController();
 
   final List<OnboardingModel> pages = [
@@ -41,6 +41,7 @@ class OnboardingController extends GetxController {
         curve: Curves.ease,
       );
     } else {
+      GetStorage().write('has_seen_onboarding', true);
       Get.offAllNamed(Routes.WELCOME);
     }
   }

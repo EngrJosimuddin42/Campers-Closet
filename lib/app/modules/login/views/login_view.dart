@@ -48,23 +48,23 @@ class LoginView extends GetView<LoginController> {
               /// Email
               LabeledTextField(
                 label: "Email",
-                controller: TextEditingController(),
+                controller: controller.emailController,
                 prefixIcon: AppLogos.mail,
                 hintText: "Enter your email",
                 bottomPadding: 20,
-                errorMessage: ''.obs,
+                errorMessage: controller.emailError,
               ),
 
               /// Password
               LabeledTextField(
                 label: "Password",
-                controller: TextEditingController(),
+                controller: controller.passwordController,
                 prefixIcon: AppLogos.lock,
                 hintText: "Enter your password",
                 isPassword: true,
                 textInputAction: TextInputAction.done,
                 bottomPadding: 12,
-                errorMessage: ''.obs,
+                errorMessage: controller.passwordError,
               ),
 
               Row(
@@ -99,12 +99,17 @@ class LoginView extends GetView<LoginController> {
                 ],
               ),
               SizedBox(height: 30.h),
-              CustomButton(
-                onTap: controller.login,
-                text: 'Sign In',
-                fontSize: 18.sp,
-                height: 44.h,
-                radius: 16.r,
+              Obx(
+                () => CustomButton(
+                  onTap: controller.isLoading.value ? null : controller.login,
+                  text: controller.isLoading.value
+                      ? 'Signing in...'
+                      : 'Sign In',
+                  loading: controller.isLoading.value,
+                  fontSize: 18.sp,
+                  height: 44.h,
+                  radius: 16.r,
+                ),
               ),
 
               SizedBox(height: 30.h),

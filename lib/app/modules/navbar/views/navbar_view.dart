@@ -4,7 +4,6 @@ import 'package:campers_closet/app/modules/calendar/views/calendar_view.dart';
 import 'package:campers_closet/app/modules/closet/views/closet_view.dart';
 import 'package:campers_closet/app/modules/home/views/home_view.dart';
 import 'package:campers_closet/app/modules/navbar/widgets/navbar.dart';
-import 'package:campers_closet/app/modules/profile/views/personal_info_screen.dart';
 import 'package:campers_closet/app/modules/profile/views/profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

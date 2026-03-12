@@ -11,13 +11,7 @@ class SplashView extends GetView<SplashController> {
 
   @override
   Widget build(BuildContext context) {
-    controller.startTimer(); 
-    
-    return const Scaffold(
-      body: Center(
-        child: _Logo()
-      ),
-    );
+    return const Scaffold(body: Center(child: _Logo()));
   }
 }
 
@@ -26,10 +20,6 @@ class _Logo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset(
-      AppLogos.splashlogo,
-      width: 264,
-      height: 195,
-    );
+    return SvgPicture.asset(AppLogos.splashlogo, width: 264, height: 195);
   }
 }
