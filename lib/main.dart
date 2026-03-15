@@ -16,7 +16,7 @@ void main() async {
       child: GetMaterialApp(
         title: "Campers Closet",
         debugShowCheckedModeBanner: false,
-        initialRoute: AppPages.INITIAL,
+        initialRoute: '/otp-verification',
         getPages: AppPages.routes,
         transitionDuration: Duration(milliseconds: 500),
       ),

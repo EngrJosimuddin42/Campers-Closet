@@ -59,7 +59,7 @@ class LoginView extends GetView<LoginController> {
               LabeledTextField(
                 label: "Password",
                 controller: controller.passwordController,
-                prefixIcon: AppLogos.lock,
+                prefixIcon: AppLogos.locklogo,
                 hintText: "Enter your password",
                 isPassword: true,
                 textInputAction: TextInputAction.done,

@@ -76,7 +76,7 @@ class SignupView extends StatelessWidget {
               LabeledTextField(
                 label: "Password",
                 controller: controller.passwordController,
-                prefixIcon: AppLogos.lock,
+                prefixIcon: AppLogos.locklogo,
                 hintText: "Enter your password",
                 isPassword: true,
                 errorMessage: controller.passwordError,
@@ -86,7 +86,7 @@ class SignupView extends StatelessWidget {
               LabeledTextField(
                 label: "Confirm Password",
                 controller: controller.confirmPasswordController,
-                prefixIcon: AppLogos.lock,
+                prefixIcon: AppLogos.locklogo,
                 hintText: "Confirm your password",
                 isPassword: true,
                 textInputAction: TextInputAction.done,
