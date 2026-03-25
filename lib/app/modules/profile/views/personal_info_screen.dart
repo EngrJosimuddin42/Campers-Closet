@@ -12,9 +12,6 @@ class PersonalInfoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final PersonalInfoController ctrl = Get.put(PersonalInfoController());
-    ctrl.fullNameController.text = 'Heather';
-    ctrl.emailController.text = 'heather.parent@example.com';
-    ctrl.dobController.text = '22/12/2026';
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -28,35 +25,39 @@ class PersonalInfoScreen extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () => Get.back(),
-                    child: Icon(
-                      Icons.arrow_back,
-                      size: 22.sp,
-                      color: const Color(0xFF1A1A2E),
-                    ),
+                    child: Icon(Icons.arrow_back, size: 22.sp, color: const Color(0xFF1A1A2E)),
                   ),
                   SizedBox(width: 12.w),
-                  Text(
-                    'Accounts',
-                    style: GoogleFonts.sora(
-                      fontSize: 22.sp,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF1A1A2E),
+                  Text('Personal Info', style: GoogleFonts.sora(fontSize: 22.sp, fontWeight: FontWeight.w700)),
+                  const Spacer(),
+
+                  Obx(() => GestureDetector(
+                    onTap: ctrl.isLoading.value ? null : () => ctrl.save(),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1A73E8),
+                        borderRadius: BorderRadius.circular(20.r),
+                      ),
+                      child: ctrl.isLoading.value
+                          ? SizedBox(height: 15, width: 15, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                          : Text('Save', style: GoogleFonts.inter(fontSize: 13.sp, color: Colors.white)),
                     ),
-                  ),
+                  )),
                 ],
               ),
+
               SizedBox(height: 30.h),
-              // ── Full Name
+
               LabeledTextField(
                 label: 'FULL NAME',
                 controller: ctrl.fullNameController,
-                prefixIcon: AppLogos.person,
+                prefixIcon: AppLogos.user,
                 hintText: 'Enter your full name',
                 errorMessage: ctrl.fullNameError,
                 textInputAction: TextInputAction.next,
               ),
 
-              // ── Email Address
               LabeledTextField(
                 label: 'EMAIL ADDRESS',
                 controller: ctrl.emailController,
@@ -70,7 +71,7 @@ class PersonalInfoScreen extends StatelessWidget {
               GestureDetector(
                 onTap: () => ctrl.pickDate(context),
                 child: AbsorbPointer(
-                  child: LabeledTextField(
+                  child:LabeledTextField(
                     label: 'DATE OF BIRTH',
                     controller: ctrl.dobController,
                     prefixIcon: AppLogos.calendar,
@@ -78,9 +79,8 @@ class PersonalInfoScreen extends StatelessWidget {
                     errorMessage: ctrl.dobError,
                     textInputAction: TextInputAction.done,
                     bottomPadding: 0,
-                  ),
+                  )),
                 ),
-              ),
             ],
           ),
         ),

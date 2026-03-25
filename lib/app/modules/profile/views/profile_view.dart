@@ -6,12 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../controllers/profile_controller.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
 
+
   @override
   Widget build(BuildContext context) {
+    final ProfileController controller = Get.put(ProfileController());
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7F7),
       body: SafeArea(
@@ -22,15 +25,19 @@ class ProfileView extends StatelessWidget {
             children: [
               SizedBox(height: 20.h),
 
-              // Avatar
-              Stack(
+            // Avatar
+            Obx(() {
+              String userName = controller.userData['full_name'] ?? 'User';
+              String? profilePic = controller.userData['profile_pic'];
+
+              return Stack(
                 alignment: Alignment.bottomRight,
                 children: [
                   Container(
-                    width: 90.w,
-                    height: 90.w,
+                    width: 128.w,
+                    height: 128.w,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(22.r),
+                      borderRadius: BorderRadius.circular(48.r),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.15),
@@ -38,53 +45,91 @@ class ProfileView extends StatelessWidget {
                           offset: const Offset(0, 6),
                         ),
                       ],
-                      image: const DecorationImage(
-                        image: NetworkImage('https://i.pravatar.cc/300?img=47'),
+                      image: DecorationImage(
+                        image: (profilePic != null && profilePic.isNotEmpty)
+                            ? NetworkImage(
+                          profilePic.startsWith('http')
+                              ? profilePic
+                              : 'http://3.225.98.180${profilePic}',
+                        )
+                            : NetworkImage(
+                          'https://ui-avatars.com/api/?name=${Uri.encodeComponent(userName)}&background=1A1A2E&color=fff&size=256&bold=true',
+                        ),
                         fit: BoxFit.cover,
                       ),
                     ),
+                child: controller.isLoading.value
+                    ? const Center(child: CircularProgressIndicator(color: Colors.white))
+                    : null,
                   ),
-                  Container(
-                    width: 28.w,
-                    height: 28.w,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1A1A2E),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
-                    ),
-                    child: Icon(
-                      Icons.camera_alt_rounded,
-                      size: 14.sp,
-                      color: Colors.white,
+
+
+                  GestureDetector(
+                    onTap: () => controller.uploadProfileImage(),
+                    child: Container(
+                      width: 28.w,
+                      height: 28.w,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1A1A2E),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                      child: Icon(
+                        Icons.camera_alt_rounded,
+                        size: 14.sp,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ],
-              ),
+              );
+            }),
 
               SizedBox(height: 14.h),
 
               // Name
-              Text(
-                'Heather',
-                style: GoogleFonts.sora(
-                  fontSize: 22.sp,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF1A1A2E),
+              Obx(() => GestureDetector(
+                onTap: () {
+                  controller.openEditNameDialog();
+                },
+                child: Text(
+                  controller.userData['full_name'] ?? 'Guest User',
+                  style: GoogleFonts.sora(
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF1A1A2E),
+                  ),
                 ),
-              ),
+              )),
 
               SizedBox(height: 4.h),
 
               // Member tag
-              Text(
-                'Member • Est. 2024',
-                style: GoogleFonts.inter(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w400,
-                  color: const Color(0xFF90A1B9),
-                ),
-              ),
+              Obx(() {
+                final data = controller.userData;
+                String role = data['role'] ?? 'Member';
+                role = role[0].toUpperCase() + role.substring(1);
+                String createdAt = data['created_at'] ?? '';
+                String year = '';
 
+                if (createdAt.isNotEmpty) {
+                  try {
+                    year = DateTime.parse(createdAt).year.toString();
+                  } catch (e) {
+                    year = '';
+                  }
+                }
+                return Text(
+                  year.isNotEmpty
+                      ? '$role • Est. $year'
+                      : role,
+                  style: GoogleFonts.inter(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFF90A1B9),
+                  ),
+                );
+              }),
               SizedBox(height: 32.h),
 
               // Section label
@@ -156,7 +201,20 @@ class ProfileView extends StatelessWidget {
 
               // Sign out button
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  Get.defaultDialog(
+                    title: "Sign Out",
+                    middleText: "Are you sure you want to sign out?",
+                    textConfirm: "Yes",
+                    textCancel: "No",
+                    confirmTextColor: Colors.white,
+                    buttonColor: const Color(0xFFE53935),
+                    onConfirm: () {
+                      Get.back();
+                      controller.logout();
+                    },
+                  );
+                },
                 child: Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(vertical: 16.h),

@@ -3,12 +3,15 @@ import 'package:campers_closet/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../data/repositories/auth_repository.dart';
+
 class ForgetPasswordController extends GetxController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController otpController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  final AuthRepository _authRepository = AuthRepository();
 
   RxBool isLoading = false.obs;
   RxBool isLoadingOtp = false.obs;
@@ -18,6 +21,7 @@ class ForgetPasswordController extends GetxController {
   RxString confirmPasswordError = ''.obs;
 
   RxString userEmail = ''.obs;
+  RxString resetToken = ''.obs;
 
   RxBool canResend = false.obs;
   RxInt secondsRemaining = 60.obs;
@@ -32,34 +36,42 @@ class ForgetPasswordController extends GetxController {
 
   @override
   void onInit() {
-    startTimer();
     super.onInit();
+    startTimer();
   }
 
   void validateAndRequestReset() async {
-    emailError.value = '';
-    userEmail.value = emailController.text.trim();
+    if (emailController.text.isEmpty) {
+      emailError.value = "Email is required";
+      return;
+    }
 
     try {
       isLoading.value = true;
+      emailError.value = '';
+      userEmail.value = emailController.text.trim();
 
-      await Future.delayed(const Duration(seconds: 2));
+      await _authRepository.requestPasswordReset(userEmail.value);
 
       Get.snackbar(
         "Success",
         "Reset code sent to your email",
         snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withValues(alpha: 0.1),
       );
 
+      FocusManager.instance.primaryFocus?.unfocus();
       Get.toNamed(Routes.OTP);
+
     } catch (e) {
       Get.snackbar(
         "Error",
-        "Failed to send reset code",
+        e.toString(),
         snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
       );
     } finally {
-      isLoading.value = false;
+      if (!isClosed) isLoading.value = false;
     }
   }
 
@@ -70,10 +82,10 @@ class ForgetPasswordController extends GetxController {
     timer?.cancel();
 
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (secondsRemaining.value > 0) {
+      if (!isClosed && secondsRemaining.value > 0) {
         secondsRemaining.value--;
       } else {
-        canResend.value = true;
+        if (!isClosed) canResend.value = true;
         timer.cancel();
       }
     });
@@ -92,15 +104,32 @@ class ForgetPasswordController extends GetxController {
     try {
       isLoadingOtp.value = true;
 
-      await Future.delayed(const Duration(seconds: 2));
+      final data = await _authRepository.verifyResetOtp(
+        email: userEmail.value,
+        otp: otp,
+      );
 
-      Get.snackbar("Success", "OTP Verified");
+      resetToken.value = data['reset_token'] ?? '';
+      print("Reset Token saved: ${resetToken.value}");
 
-      Get.offNamed(Routes.RESET_VIEW);
+      Get.snackbar(
+        "Success",
+        "OTP Verified",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withValues(alpha: 0.1),
+      );
+
+      Get.toNamed(Routes.RESET_VIEW);
+
     } catch (e) {
-      Get.snackbar("Error", "OTP verification failed");
+      Get.snackbar(
+        "Error",
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
+      );
     } finally {
-      isLoadingOtp.value = false;
+      if (!isClosed) isLoadingOtp.value = false;
     }
   }
 
@@ -108,16 +137,27 @@ class ForgetPasswordController extends GetxController {
     try {
       isLoadingOtp.value = true;
 
-      await Future.delayed(const Duration(seconds: 2));
+      await _authRepository.resendOtp(email: userEmail.value);
 
       otpController.clear();
       startTimer();
 
-      Get.snackbar("Success", "OTP sent again");
+      Get.snackbar(
+        "Success",
+        "OTP sent again",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withValues(alpha: 0.1),
+      );
+
     } catch (e) {
-      Get.snackbar("Error", "Failed to resend OTP");
+      Get.snackbar(
+        "Error",
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
+      );
     } finally {
-      isLoadingOtp.value = false;
+      if (!isClosed) isLoadingOtp.value = false;
     }
   }
 
@@ -125,26 +165,57 @@ class ForgetPasswordController extends GetxController {
     passwordError.value = '';
     confirmPasswordError.value = '';
 
+    if (passwordController.text.isEmpty) {
+      passwordError.value = "Password is required";
+      return;
+    }
+
+    if (confirmPasswordController.text.isEmpty) {
+      confirmPasswordError.value = "Please confirm your password";
+      return;
+    }
+
+    if (passwordController.text != confirmPasswordController.text) {
+      confirmPasswordError.value = "Passwords do not match";
+      return;
+    }
+
     try {
       isLoading.value = true;
 
-      await Future.delayed(const Duration(seconds: 2));
+      await _authRepository.confirmPasswordReset(
+        email: userEmail.value,
+        otp: otpController.text,
+        newPassword: passwordController.text,
+        confirmPassword: confirmPasswordController.text,
+        resetToken: resetToken.value,
+      );
+
+      print("Reset Token used: ${resetToken.value}");
+
+      FocusManager.instance.primaryFocus?.unfocus();
 
       Get.snackbar(
         "Success",
         "Password reset successfully",
         snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withValues(alpha: 0.7),
+        colorText: Colors.white,
       );
 
-      Get.offNamed(Routes.BACKLOGIN);
+      await Future.delayed(const Duration(seconds: 1));
+      Get.offAllNamed(Routes.LOGIN);
+
     } catch (e) {
+      print("Reset password error: $e");
       Get.snackbar(
         "Error",
-        "Failed to reset password",
+        e.toString(),
         snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
       );
     } finally {
-      isLoading.value = false;
+      if (!isClosed) isLoading.value = false;
     }
   }
 

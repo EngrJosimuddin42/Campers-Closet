@@ -2,18 +2,31 @@ import 'package:campers_closet/app/data/repositories/auth_repository.dart';
 import 'package:campers_closet/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 class LoginController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
 
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  late final TextEditingController emailController;
+  late final TextEditingController passwordController;
 
   var emailError = ''.obs;
   var passwordError = ''.obs;
 
   var rememberMe = false.obs;
   var isLoading = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
+  }
+
+  @override
+  void onClose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.onClose();
+  }
 
   void toggleRememberMe() {
     rememberMe.value = !rememberMe.value;
@@ -53,13 +66,13 @@ class LoginController extends GetxController {
         password: passwordController.text,
       );
 
-      Get.offAllNamed(Routes.HOME);
+      Get.offAllNamed(Routes.NAVBAR);
     } catch (e) {
       Get.snackbar(
         'Login Failed',
         e.toString(),
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.1),
+        backgroundColor: Colors.red.withAlpha(25),
         colorText: Colors.red,
         margin: const EdgeInsets.all(16),
       );
@@ -74,12 +87,5 @@ class LoginController extends GetxController {
 
   void goToSignUp() {
     Get.toNamed(Routes.SIGNUP);
-  }
-
-  @override
-  void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.onClose();
   }
 }

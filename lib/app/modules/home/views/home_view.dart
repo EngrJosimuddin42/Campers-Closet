@@ -13,12 +13,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../profile/views/notification_screen.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
   @override
   Widget build(BuildContext context) {
+    Get.put(HomeController());
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -170,35 +172,42 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
             const Spacer(),
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                SvgPicture.asset(
-                  AppLogos.homenotification,
-                  width: 24,
-                  height: 24,
-                ),
-                Positioned(
-                  right: 0,
-                  top: -10,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: AppColors.errorColor,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(
-                      '3',
-                      style: GoogleFonts.inter(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
+            Obx(() => GestureDetector(
+              onTap: () {
+                Get.to(() => const NotificationsScreen());
+              },
+              behavior: HitTestBehavior.translucent,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  SvgPicture.asset(
+                    AppLogos.homenotification,
+                    width: 24,
+                    height: 24,
+                  ),
+                  if (controller.unreadNotificationCount.value > 0)
+                    Positioned(
+                      right: -2,
+                      top: -8,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: AppColors.errorColor,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          controller.unreadNotificationCount.value.toString(),
+                          style: GoogleFonts.inter(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            )),
           ],
         ),
       ],

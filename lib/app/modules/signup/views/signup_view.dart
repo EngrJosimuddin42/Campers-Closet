@@ -46,6 +46,7 @@ class SignupView extends StatelessWidget {
 
               // Full Name Field
               LabeledTextField(
+
                 label: "Name",
                 controller: controller.fullNameController,
                 prefixIcon: AppLogos.person,

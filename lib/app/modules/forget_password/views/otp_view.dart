@@ -39,7 +39,7 @@ class OtpView extends StatelessWidget {
                 SizedBox(height: 6.h),
                 Obx(
                   () => Text(
-                    'We\'ve sent a code to ${controller.userEmail.value.isEmpty ? 'hafiz@gmail.com' : controller.userEmail.value}',
+                    'We\'ve sent a code to ${controller.userEmail.value.isEmpty ? 'josimcse@gmail.com' : controller.userEmail.value}',
                     textAlign: TextAlign.center,
                     style: AppTextStyles.title14_500(
                       color: AppColors.secondaryText,

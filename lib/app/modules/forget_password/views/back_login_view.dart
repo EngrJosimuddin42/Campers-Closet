@@ -42,7 +42,10 @@ class BackLoginView extends StatelessWidget {
                 ),
                 SizedBox(height: 50.h),
                 CustomButton(
-                  onTap: () => Get.offAllNamed(Routes.LOGIN),
+                  onTap: () {
+                   FocusManager.instance.primaryFocus?.unfocus();
+                  Get.offAllNamed(Routes.LOGIN);
+              },
                   text: 'Back to Login',
                   fontSize: 18.sp,
                   height: 44.h,

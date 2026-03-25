@@ -27,6 +27,7 @@ class SignupController extends GetxController {
   // Loading state
   var isLoading = false.obs;
 
+
   void toggleTermsAcceptance() {
     acceptedTerms.value = !acceptedTerms.value;
   }
@@ -98,7 +99,7 @@ class SignupController extends GetxController {
     return isValid;
   }
 
-  /// Converts "DD/MM/YYYY" (from date picker) to "YYYY-MM-DD" (API format)
+  // Converts "DD/MM/YYYY" (from date picker) to "YYYY-MM-DD" (API format)
   String _formatDobForApi(String dob) {
     final parsed = DateFormat('dd/MM/yyyy').parse(dob);
     return DateFormat('yyyy-MM-dd').format(parsed);
@@ -127,8 +128,6 @@ class SignupController extends GetxController {
         margin: const EdgeInsets.all(16),
       );
 
-      // Go to login since email verification is required
-      // In validateAndSignup(), replace Get.offAllNamed(Routes.LOGIN) with:
       Get.offAllNamed(
         Routes.OTP_VERIFICATION,
         arguments: {'email': emailController.text.trim()},

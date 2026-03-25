@@ -30,7 +30,7 @@ class SplashController extends GetxController {
     if (!hasSeenOnboarding) {
       Get.offAllNamed(Routes.ONBOARDING);
     } else if (isLoggedIn) {
-      Get.offAllNamed(Routes.HOME);
+      Get.offAllNamed(Routes.NAVBAR);
     } else {
       Get.offAllNamed(Routes.WELCOME);
     }

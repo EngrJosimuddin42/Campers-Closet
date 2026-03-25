@@ -88,7 +88,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       return GestureDetector(
         onTap: _toggleObscureText,
         child: _buildSvgIcon(
-          _obscureText ? AppLogos.eyelogo : AppLogos.eyecloselogo,
+          _obscureText ? AppLogos.eyecloselogo : AppLogos.eyelogo,
         ),
       );
     }
