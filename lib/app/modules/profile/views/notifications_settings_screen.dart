@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+import '../../../data/repositories/notification_repository.dart';
 
 class NotificationsSettingsScreen extends StatefulWidget {
   const NotificationsSettingsScreen({super.key});
@@ -15,12 +16,33 @@ class NotificationsSettingsScreen extends StatefulWidget {
 class _NotificationsSettingsScreenState
     extends State<NotificationsSettingsScreen> {
   final _box = GetStorage();
-  late bool _notificationsEnabled;
+  bool _notificationsEnabled = true;
+  bool _isLoading = true;
+
 
   @override
   void initState() {
     super.initState();
-    _notificationsEnabled = _box.read('notifications_enabled') ?? true;
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    setState(() {
+      _notificationsEnabled = _box.read('notifications_enabled') ?? true;
+      _isLoading = false;
+    });
+    try {
+      final response = await NotificationRepository().getNotificationSettings();
+      if (response['success'] == true) {
+        final data = response['data'];
+        setState(() {
+          _notificationsEnabled = data['enabled'] ?? true;
+        });
+        await _box.write('notifications_enabled', _notificationsEnabled);
+      }
+    } catch (e) {
+      debugPrint("Error loading settings: $e");
+    }
   }
 
   @override
@@ -62,7 +84,9 @@ class _NotificationsSettingsScreenState
         ),
         centerTitle: false,
       ),
-      body: Padding(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,17 +180,20 @@ class _NotificationsSettingsScreenState
                 Expanded(
                   child: GestureDetector(
                     onTap: () async {
-                      await _box.write('notifications_enabled', _notificationsEnabled);
-                      Get.back();
-                      Get.snackbar(
-                        'Saved',
-                        _notificationsEnabled
-                            ? 'Notifications enabled'
-                            : 'Notifications disabled',
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: const Color(0xFF2B7FFF),
-                        colorText: Colors.white,
-                      );
+                      try {
+                        await NotificationRepository().updateNotificationSettings(_notificationsEnabled);
+                        await _box.write('notifications_enabled', _notificationsEnabled);
+                        Get.back();
+                        Get.snackbar('Saved',
+                          _notificationsEnabled ? 'Notifications enabled' : 'Notifications disabled',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: const Color(0xFF2B7FFF),
+                          colorText: Colors.white,
+                        );
+                      } catch (e) {
+                        Get.snackbar('Error', e.toString(),
+                            backgroundColor: Colors.red, colorText: Colors.white);
+                      }
                     },
                     child: Container(
                       height: 52.h,

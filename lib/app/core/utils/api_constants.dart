@@ -10,6 +10,10 @@ class ApiConstants {
   static const String deleteAccount = 'user/profile/delete/';
   static const String changePassword = "user/change-password/";
 
+  static const notifications = "user/notifications/";
+  static const notificationsMarkAllRead = "user/notifications/mark-read/";
+  static const notificationSettings = "user/notifications/settings/";
+
   static const verifyOtp = "user/verify-otp/";
   static const requestOtp = "user/request-otp/";
   static const requestPasswordReset = "user/request-password-reset/";
