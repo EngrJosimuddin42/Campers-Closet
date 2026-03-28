@@ -20,6 +20,7 @@ class CustomTextField extends StatefulWidget {
   final FormFieldValidator? validator;
   final bool isPassword;
   final bool? isEmail;
+  final bool readOnly;
   final Function(String?)? onValidationError;
   final TextInputAction? textInputAction;
 
@@ -32,6 +33,7 @@ class CustomTextField extends StatefulWidget {
     this.isEmail,
     this.onValidationError,
     required this.controller,
+    this.readOnly = false,
     this.keyboardType = TextInputType.text,
     this.obscure = '*',
     this.fillColor,
@@ -117,6 +119,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       validator: _validateField,
       cursorColor: AppColors.primaryColor,
       obscureText: _obscureText,
+      readOnly: widget.readOnly,
       autovalidateMode: AutovalidateMode.disabled,
       onChanged: (value) {
         if (widget.onValidationError != null) {

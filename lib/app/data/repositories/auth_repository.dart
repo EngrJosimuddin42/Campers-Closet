@@ -2,9 +2,6 @@ import 'package:campers_closet/app/core/network/api_exception.dart';
 import 'package:campers_closet/app/core/utils/api_constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:get/get_navigation/src/snackbar/snackbar.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../services/api_service.dart';
@@ -168,48 +165,25 @@ class AuthRepository {
         }
       } catch (_) {}
 
-      print('before api call');
+      final response = await _apiService.post(
+        ApiConstants.childSignup,
+        data: {
+          "email": email,
+          "full_name": fullName,
+          "date_of_birth": formattedDate,
+          "password": password,
+          "password_confirm": passwordConfirm,
+        },
+      );
 
-      try{
-        final response = await _apiService.post(
-          ApiConstants.childSignup,
-          data: {
-            "email": email,
-            "full_name": fullName,
-            "date_of_birth": formattedDate,
-            "password": password,
-            "password_confirm": passwordConfirm,
-          },
-        );
-        print('resposne: $response');
-
-        final bool success = response.data["success"] ?? false;
-        if (!success) {
-          throw response.data["message"] ?? "Child signup failed";
-        }else{
-          print('child account added successfully');
-          Get.snackbar(
-            'Success',
-            'Child account added successfully!',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.green,
-            colorText: Colors.white,
-            duration: const Duration(seconds: 3),
-          );
-        }
-        print(response.data);
-        final childData = response.data["data"];
-        print('childData: $childData');
-
-        final box = GetStorage();
-        List<dynamic> childList = box.read('child_accounts') ?? [];
-        childList.add(response.data['data']['user']);
-        await box.write('child_accounts', childList);
-
-      }catch(e){
-        print('error in api call: $e');
-
+      final bool success = response.data["success"] ?? false;
+      if (!success) {
+        throw response.data["message"] ?? "Child signup failed";
       }
+      final box = GetStorage();
+      List<dynamic> childList = box.read('child_accounts') ?? [];
+      childList.add(response.data['data']['user']);
+      await box.write('child_accounts', childList);
 
     } on DioException catch (e) {
       throw handleDioError(e);
@@ -293,10 +267,13 @@ class AuthRepository {
   Future<Map<String, dynamic>> updateProfile({
     String? fullName,
     String? imagePath,
+    String? dateOfBirth,
+    String? childId,
   }) async {
     try {
       Map<String, dynamic> data = {};
       if (fullName != null) data["full_name"] = fullName;
+      if (dateOfBirth != null) data["date_of_birth"] = dateOfBirth;
 
       if (imagePath != null) {
         data["profile_pic"] = await MultipartFile.fromFile(
@@ -304,17 +281,32 @@ class AuthRepository {
           filename: imagePath.split('/').last,
         );
       }
+
       FormData formData = FormData.fromMap(data);
+
+      final endpoint = childId != null
+          ? '${ApiConstants.profileUpdate}?child=$childId'
+          : ApiConstants.profileUpdate;
+
       final response = await _apiService.patch(
-        ApiConstants.profileUpdate,
+        endpoint,
         data: formData,
-        options: Options(
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        ),
+        options: Options(headers: {"Content-Type": "multipart/form-data"}),
       );
 
+      return response.data;
+    } on DioException catch (e) {
+      throw handleDioError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchProfile({String? childId}) async {
+    try {
+      final endpoint = childId != null
+          ? '${ApiConstants.profileFetch}?child=$childId'
+          : ApiConstants.profileFetch;
+
+      final response = await _apiService.get(endpoint);
       return response.data;
     } on DioException catch (e) {
       throw handleDioError(e);
@@ -342,21 +334,40 @@ class AuthRepository {
 
 
   // Delete Account Response
-  Future<void> deleteAccount(String userId) async {
+  Future<void> deleteAccount(String userId, {bool isChild = false}) async {
     try {
-      final String fullUrl = "${ApiConstants.deleteAccount}$userId/";
+      final String fullUrl = isChild
+          ? '${ApiConstants.deleteAccount}?child=$userId'
+          : ApiConstants.deleteAccount;
 
-      final response = await _apiService.delete(fullUrl);
+      print("DEBUG delete URL: $fullUrl");
 
-      final bool success = response.data["success"] ?? false;
-      if (!success) {
-        throw response.data["message"] ?? "Failed to delete account";
+      final response = await _apiService.delete(
+        fullUrl,
+        options: Options(
+          validateStatus: (status) => status != null && status < 500,
+        ),
+      );
+      print("DEBUG delete statusCode: ${response.statusCode}");
+      if (response.statusCode == 204 || response.statusCode == 200) {
+        if (!isChild) {
+          _storage.clearTokens();
+          await GetStorage().remove('user_data');
+        }
+        return;
       }
-
-      _storage.clearTokens();
-      await GetStorage().remove('user_data');
+      final msg = response.data?["message"] ?? "Failed to delete account";
+      throw msg;
 
     } on DioException catch (e) {
+      print("DEBUG DioException: ${e.response?.statusCode} ${e.response?.data}");
+      if (e.response?.statusCode == 204) {
+        if (!isChild) {
+          _storage.clearTokens();
+          await GetStorage().remove('user_data');
+        }
+        return;
+      }
       throw handleDioError(e);
     }
   }

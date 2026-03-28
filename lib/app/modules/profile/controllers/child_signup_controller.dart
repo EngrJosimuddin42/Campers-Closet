@@ -57,7 +57,6 @@ class ChildSignupController extends GetxController {
     return true;
   }
 
-
   Future<void> validateAndAdd() async {
     if (isLoading.value) return;
     if (!_validate()) return;
@@ -78,8 +77,13 @@ class ChildSignupController extends GetxController {
 
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar('Error', e.toString(),
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 

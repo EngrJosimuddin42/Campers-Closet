@@ -66,6 +66,7 @@ class PersonalInfoScreen extends StatelessWidget {
                 errorMessage: ctrl.emailError,
                 isEmail: true,
                 textInputAction: TextInputAction.next,
+                readOnly: true,
               ),
 
               GestureDetector(

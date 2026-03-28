@@ -15,7 +15,6 @@ class ManageUsersScreen extends StatelessWidget {
       ManageUsersController(),
       permanent: true,
     );
-
     return Scaffold(
       backgroundColor: const Color(0xFFF0F4F8),
       body: SafeArea(
@@ -114,18 +113,23 @@ class ManageUsersScreen extends StatelessWidget {
                       ),
                     );
                   }
+                  // ListView.builder এ:
                   return ListView.builder(
                     itemCount: ctrl.accounts.length,
                     padding: EdgeInsets.zero,
                     itemBuilder: (context, i) {
                       final account = ctrl.accounts[i];
                       final isSelected = ctrl.selectedIndex.value == i;
+                      final bool isDisabled = !ctrl.isParentLoggedIn.value &&
+                          account.role.toLowerCase() == 'parent';
+
                       return Padding(
                         padding: EdgeInsets.only(bottom: 12.h),
                         child: _AccountCard(
                           account: account,
                           isSelected: isSelected,
-                          onTap: () => ctrl.selectAccount(i),
+                          isDisabled: isDisabled,
+                          onTap: isDisabled ? null : () => ctrl.selectAccount(i),
                         ),
                       );
                     },
@@ -136,8 +140,9 @@ class ManageUsersScreen extends StatelessWidget {
               SizedBox(height: 8.h),
 
               // ── Add New Child Account
-              _AddChildButton(onTap: ctrl.addChildAccount),
-
+              Obx(() => ctrl.isParentLoggedIn.value
+                  ? _AddChildButton(onTap: ctrl.addChildAccount)
+                  : const SizedBox.shrink()),
               SizedBox(height: 8.h),
             ],
           ),
@@ -150,13 +155,15 @@ class ManageUsersScreen extends StatelessWidget {
 // ─── Account Card
 class _AccountCard extends StatelessWidget {
   final AccountModel account;
+  final bool isDisabled;
   final bool isSelected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const _AccountCard({
     required this.account,
     required this.isSelected,
-    required this.onTap,
+    this.isDisabled = false,
+    this.onTap,
   });
 
   @override
@@ -164,9 +171,13 @@ class _AccountCard extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFFEEF4FF) : Colors.white,
+        color: isDisabled
+            ? const Color(0xFFF5F5F5)
+            : isSelected
+            ? const Color(0xFFEEF4FF)
+            : Colors.white,
         borderRadius: BorderRadius.circular(18.r),
-        border: isSelected
+        border: isSelected && !isDisabled
             ? Border.all(color: const Color(0xFF2B7FFF), width: 1.5)
             : Border.all(color: Colors.transparent, width: 1.5),
         boxShadow: [
@@ -183,6 +194,8 @@ class _AccountCard extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(18.r),
+          child: Opacity(
+            opacity: isDisabled ? 0.4 : 1.0,
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
             child: Row(
@@ -265,6 +278,7 @@ class _AccountCard extends StatelessWidget {
               ],
             ),
           ),
+        ),
         ),
       ),
     );

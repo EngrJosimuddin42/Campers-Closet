@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import '../../../data/repositories/auth_repository.dart';
+import '../../profile/controllers/profile_controller.dart';
+import '../../profile/controllers/manage_user_controller.dart';
 
 class PersonalInfoController extends GetxController {
+  final AuthRepository _authRepo = Get.isRegistered<AuthRepository>()
+      ? Get.find<AuthRepository>()
+      : Get.put(AuthRepository());
+
   final fullNameController = TextEditingController();
   final emailController = TextEditingController();
   final dobController = TextEditingController();
-
   final fullNameError = ''.obs;
   final emailError = ''.obs;
   final dobError = ''.obs;
-
   final isLoading = false.obs;
 
   @override
@@ -19,14 +24,43 @@ class PersonalInfoController extends GetxController {
     loadUserData();
   }
 
-  void loadUserData() {
-    final box = GetStorage();
-    final userData = box.read('user_data');
+  void loadUserData() async {
+    try {
+      final box = GetStorage();
+      final activeData = box.read('active_user_data');
+      final String? childId = activeData != null
+          ? (activeData['id'] ?? activeData['pk'])?.toString()
+          : null;
 
-    if (userData != null) {
-      fullNameController.text = userData['full_name'] ?? '';
-      emailController.text = userData['email'] ?? '';
-      dobController.text = userData['date_of_birth'] ?? '';
+      //  Server থেকে fresh data আনো
+      final response = await _authRepo.fetchProfile(childId: childId);
+
+      if (response['success'] == true) {
+        final data = response['data'];
+        fullNameController.text = data['full_name'] ?? '';
+        emailController.text = data['email'] ?? '';
+        dobController.text = data['date_of_birth'] ?? '';
+
+        //  Local storage update করো
+        if (activeData != null) {
+          await box.write('active_user_data', {
+            ...Map<String, dynamic>.from(activeData),
+            ...Map<String, dynamic>.from(data),
+          });
+        } else {
+          await box.write('user_data', data);
+        }
+      }
+    } catch (e) {
+      // fallback — local storage থেকে load করো
+      final box = GetStorage();
+      final activeData = box.read('active_user_data');
+      final userData = activeData ?? box.read('user_data');
+      if (userData != null) {
+        fullNameController.text = userData['full_name'] ?? '';
+        emailController.text = userData['email'] ?? '';
+        dobController.text = userData['date_of_birth'] ?? '';
+      }
     }
   }
 
@@ -48,10 +82,10 @@ class PersonalInfoController extends GetxController {
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
           colorScheme: const ColorScheme.light(
-            primary: const Color(0xFF1A73E8),
+            primary: Color(0xFF1A73E8),
             onPrimary: Colors.white,
             surface: Colors.white,
-            onSurface: const Color(0xFF1C2B4A),
+            onSurface: Color(0xFF1C2B4A),
           ),
         ),
         child: child!,
@@ -63,21 +97,77 @@ class PersonalInfoController extends GetxController {
     }
   }
 
+  // DOB format: DD/MM/YYYY → YYYY-MM-DD
+  String _formatDob(String dob) {
+    try {
+      final parts = dob.split('/');
+      if (parts.length == 3) {
+        return '${parts[2]}-${parts[1].padLeft(2, '0')}-${parts[0].padLeft(2, '0')}';
+      }
+    } catch (_) {}
+    return dob;
+  }
+
   void save() async {
     if (!_validate()) return;
-
     try {
       isLoading.value = true;
-      await Future.delayed(const Duration(seconds: 1));
 
       final box = GetStorage();
-      Map<String, dynamic> updatedData = {
+      final activeData = box.read('active_user_data');
+      final isChild = activeData != null;
+
+      // Child হলে id নাও, Parent হলে null
+      final String? childId = isChild
+          ? (activeData['id'] ?? activeData['pk'])?.toString()
+          : null;
+
+      final Map<String, dynamic> updatedFields = {
         'full_name': fullNameController.text.trim(),
         'email': emailController.text.trim(),
         'date_of_birth': dobController.text.trim(),
       };
 
-      await box.write('user_data', updatedData);
+      final response = await _authRepo.updateProfile(
+        fullName: fullNameController.text.trim(),
+        dateOfBirth: _formatDob(dobController.text.trim()),
+        childId: childId,
+      );
+
+      if (response['success'] != true) {
+        Get.snackbar('Error', response['message'] ?? 'Update failed',
+            backgroundColor: Colors.red, colorText: Colors.white);
+        return;
+      }
+
+      // Local storage update
+      if (isChild) {
+        final updated = {
+          ...Map<String, dynamic>.from(activeData),
+          ...updatedFields,
+        };
+        await box.write('active_user_data', updated);
+        if (childId != null) {
+          await box.write('account_data_$childId', updated);
+        }
+      } else {
+        final userData =
+        Map<String, dynamic>.from(box.read('user_data') ?? {});
+        final updated = {...userData, ...updatedFields};
+        await box.write('user_data', updated);
+        await box.write('active_user_data', updated);
+        final parentId = (userData['id'] ?? userData['pk'])?.toString();
+        if (parentId != null) {
+          await box.write('account_data_$parentId', updated);
+        }
+      }
+
+      if (Get.isRegistered<ProfileController>()) {
+        Get.find<ProfileController>().loadUserData();
+      }
+      if (Get.isRegistered<ManageUsersController>()) {
+        Get.find<ManageUsersController>().refreshSelectedAccount();
+      }
 
       Get.snackbar(
         'Success',
@@ -86,9 +176,9 @@ class PersonalInfoController extends GetxController {
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
       );
-
     } catch (e) {
-      Get.snackbar('Error', 'Update failed: $e', backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar('Error', 'Update failed: $e',
+          backgroundColor: Colors.red, colorText: Colors.white);
     } finally {
       isLoading.value = false;
     }

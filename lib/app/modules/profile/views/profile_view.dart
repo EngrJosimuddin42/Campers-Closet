@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../controllers/manage_user_controller.dart';
 import '../controllers/profile_controller.dart';
 import 'notifications_settings_screen.dart';
 
@@ -172,15 +173,21 @@ class ProfileView extends StatelessWidget {
                       onTap: () => Get.to(() => const PersonalInfoScreen()),
                     ),
                     _Divider(),
-                    _MenuItem(
+                    Obx(() => _MenuItem(
                       icon: Icons.people_outline_rounded,
                       iconColor: const Color(0xFF7C3AED),
                       label: 'Manage Users',
-                      badge: controller.accountsCount,
+                      badge: controller.accountsCount.value,
                       onTap: () async {
                         await Get.to(() => const ManageUsersScreen());
                         controller.loadUserData();
-                      },                    ),
+                        if (Get.isRegistered<ManageUsersController>()) {
+                          controller.updateAccountsCount(
+                            Get.find<ManageUsersController>().accounts.length,
+                          );
+                        }
+                      },
+                    )),
                     _Divider(),
                     _MenuItem(
                       icon: Icons.notifications_none_rounded,

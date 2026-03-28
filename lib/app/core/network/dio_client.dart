@@ -16,6 +16,7 @@ class DioClient {
         connectTimeout: ApiConstants.connectTimeout,
         receiveTimeout: ApiConstants.receiveTimeout,
         headers: {"Content-Type": "application/json"},
+        validateStatus: (status) => status != null && status < 500,
       ),
     );
 

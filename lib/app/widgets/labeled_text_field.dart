@@ -13,6 +13,7 @@ class LabeledTextField extends StatelessWidget {
   final String hintText;
   final bool isEmail;
   final bool isPassword;
+  final bool readOnly;
   final TextInputAction textInputAction;
   final RxString errorMessage;
   final double bottomPadding;
@@ -26,6 +27,7 @@ class LabeledTextField extends StatelessWidget {
     required this.errorMessage,
     this.isEmail = false,
     this.isPassword = false,
+    this.readOnly = false,
     this.textInputAction = TextInputAction.next,
     this.bottomPadding = 12,
   });
@@ -43,6 +45,7 @@ class LabeledTextField extends StatelessWidget {
           hintText: hintText,
           isEmail: isEmail,
           isPassword: isPassword,
+          readOnly: readOnly,
           textInputAction: textInputAction,
           onValidationError: (error) {
             errorMessage.value = error ?? '';

@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import '../../../data/repositories/auth_repository.dart';
+import '../controllers/manage_user_controller.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileBinding extends Bindings {
@@ -7,5 +8,6 @@ class ProfileBinding extends Bindings {
   void dependencies() {
     Get.lazyPut<AuthRepository>(() => AuthRepository());
     Get.lazyPut<ProfileController>(() => ProfileController());
+    Get.put<ManageUsersController>(ManageUsersController(),permanent: true);
   }
 }

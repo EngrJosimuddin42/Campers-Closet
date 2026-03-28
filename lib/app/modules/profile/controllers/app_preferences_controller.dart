@@ -1,7 +1,9 @@
+import 'package:campers_closet/app/modules/profile/controllers/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../data/repositories/auth_repository.dart';
+import 'manage_user_controller.dart';
 
 class AppPreferencesController extends GetxController {
   final AuthRepository _authRepo = AuthRepository();
@@ -73,43 +75,81 @@ class AppPreferencesController extends GetxController {
       isLoading.value = true;
 
       final activeAccount = _box.read('active_account');
-      print("DEBUG active_account: $activeAccount");
+      final activeUserData = _box.read('active_user_data');
+      final userData = _box.read('user_data');
 
-      final String userId = (activeAccount?['id'] ?? '').toString().trim();
-      final String role = (activeAccount?['role'] ?? '').toString();
+      final String userId = (
+          activeAccount?['id'] ??
+              activeUserData?['id'] ??
+              activeUserData?['pk'] ??
+              userData?['id'] ??
+              userData?['pk'] ??
+              ''
+      ).toString().trim();
+
+      final String selectedRole = (
+          activeAccount?['role'] ??
+              activeUserData?['role'] ??
+              'Parent'
+      ).toString();
+
+      final String loginRole = (userData?['role'] ?? '').toString().toLowerCase();
 
       if (userId.isEmpty || userId == 'null') {
-        throw 'No active account found. Please select an account first.';
+        throw 'No active account found.';
       }
 
-      await _authRepo.deleteAccount(userId);
+      final bool isChild = selectedRole.toLowerCase() != 'parent';
 
-      if (role == 'Parent') {
+      await _authRepo.deleteAccount(userId, isChild: isChild);
+
+      if (!isChild) {
+
         await _box.erase();
+        Get.back();
+        await Future.delayed(const Duration(milliseconds: 300));
+        Get.offAllNamed('/login');
       } else {
-        final List childList = _box.read('child_accounts') ?? [];
+        final List childList = List.from(_box.read('child_accounts') ?? []);
         childList.removeWhere(
-              (c) => (c['id'] ?? c['pk']).toString() == userId,
+              (c) => c != null && (c['id'] ?? c['pk'])?.toString() == userId,
         );
         await _box.write('child_accounts', childList);
         await _box.remove('active_account');
+        await _box.remove('active_user_data');
+
+        Get.back(); // dialog close
+        await Future.delayed(const Duration(milliseconds: 300));
+        Get.back(); // preferences screen close
+        await Future.delayed(const Duration(milliseconds: 200));
+
+        if (loginRole == 'child') {
+          await _box.erase();
+          Get.offAllNamed('/login');
+        } else {
+
+          final parentData = _box.read('user_data');
+          if (parentData != null) {
+            await _box.write('active_user_data', parentData);
+          }
+          if (Get.isRegistered<ManageUsersController>()) {
+            await Get.find<ManageUsersController>().fetchAccounts();
+          }
+          if (Get.isRegistered<ProfileController>()) {
+            Get.find<ProfileController>().loadUserData();
+          }
+          Get.snackbar(
+            'Success', 'Account deleted successfully',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+          );
+        }
       }
-
-      if (Get.isOverlaysOpen) Get.back();
-      await Future.delayed(const Duration(milliseconds: 200));
-      Get.offAllNamed('/login');
-
-      Get.snackbar(
-        'Success',
-        'Account deleted successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
     } catch (e) {
+      print("DEBUG error: $e");
       Get.snackbar(
-        'Error',
-        e.toString(),
+        'Error', e.toString(),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
