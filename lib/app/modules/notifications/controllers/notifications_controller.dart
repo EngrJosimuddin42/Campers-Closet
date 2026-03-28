@@ -21,7 +21,6 @@ class NotificationsController extends GetxController {
       final response = await _repo.getNotifications();
       if (response['success'] == true) {
         final data = response['data'];
-        // ✅ list হলে সরাসরি, না হলে results key
         final List raw = (data is List) ? data : (data['results'] ?? []);
         notifications.value = raw
             .map((e) => Map<String, dynamic>.from(e))
@@ -43,7 +42,6 @@ class NotificationsController extends GetxController {
           .toList();
       notifications.refresh();
     } catch (e) {
-      // ✅ silently local update করো
       notifications.value = notifications
           .map((n) => {...n, 'is_read': true})
           .toList();
@@ -63,7 +61,6 @@ class NotificationsController extends GetxController {
         notifications.refresh();
       }
     } catch (e) {
-      // ✅ 404 হলে silently local update করো — error দেখানো দরকার নেই
       final idx = notifications.indexWhere((n) => n['id'].toString() == pk);
       if (idx != -1) {
         notifications[idx] = {
