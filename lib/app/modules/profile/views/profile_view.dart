@@ -1,12 +1,12 @@
 import 'package:campers_closet/app/modules/profile/views/app_preference_screen.dart';
 import 'package:campers_closet/app/modules/profile/views/manage_user_screen.dart';
-import 'package:campers_closet/app/modules/profile/views/notification_screen.dart';
 import 'package:campers_closet/app/modules/profile/views/personal_info_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controllers/profile_controller.dart';
+import 'notifications_settings_screen.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
@@ -15,6 +15,7 @@ class ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ProfileController controller = Get.put(ProfileController());
+    print('childs: ${controller.accountsCount}');
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7F7),
       body: SafeArea(
@@ -175,15 +176,17 @@ class ProfileView extends StatelessWidget {
                       icon: Icons.people_outline_rounded,
                       iconColor: const Color(0xFF7C3AED),
                       label: 'Manage Users',
-                      badge: 2,
-                      onTap: () => Get.to(() => const ManageUsersScreen()),
-                    ),
+                      badge: controller.accountsCount,
+                      onTap: () async {
+                        await Get.to(() => const ManageUsersScreen());
+                        controller.loadUserData();
+                      },                    ),
                     _Divider(),
                     _MenuItem(
                       icon: Icons.notifications_none_rounded,
                       iconColor: const Color(0xFFF5A623),
                       label: 'Notifications',
-                      onTap: () => Get.to(() => const NotificationsScreen()),
+                      onTap: () => Get.to(() => const NotificationsSettingsScreen()),
                     ),
                     _Divider(),
                     _MenuItem(
@@ -217,9 +220,9 @@ class ProfileView extends StatelessWidget {
                 },
                 child: Container(
                   width: double.infinity,
-                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                  padding: EdgeInsets.symmetric(vertical: 12.h),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFEEEE),
+                    color: const Color(0x1AE50E1A),
                     borderRadius: BorderRadius.circular(16.r),
                   ),
                   child: Center(

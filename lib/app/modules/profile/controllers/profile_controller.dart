@@ -26,6 +26,12 @@ class ProfileController extends GetxController {
     loadUserData();
   }
 
+  // accounts count — storage থেকে
+  int get accountsCount {
+    final box = GetStorage();
+    final List childList = box.read('child_accounts') ?? [];
+    return 1 + childList.length;
+  }
 
   void loadUserData() {
     final box = GetStorage();

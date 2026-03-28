@@ -8,6 +8,7 @@ abstract class Routes {
   static const ONBOARDING = _Paths.ONBOARDING;
   static const SPLASH = _Paths.SPLASH;
   static const SIGNUP = _Paths.SIGNUP;
+  static const CHILD_SIGNUP = _Paths.CHILD_SIGNUP;
   static const WELCOME = _Paths.WELCOME;
   static const FORGET_PASSWORD = _Paths.FORGET_PASSWORD;
   static const OTP = _Paths.OTP;
@@ -19,6 +20,7 @@ abstract class Routes {
   static const PROFILE = _Paths.PROFILE;
   static const SCANNER = _Paths.SCANNER;
   static const OTP_VERIFICATION = _Paths.OTP_VERIFICATION;
+  static const NOTIFICATIONS = _Paths.NOTIFICATIONS;
 }
 
 abstract class _Paths {
@@ -28,6 +30,7 @@ abstract class _Paths {
   static const ONBOARDING = '/onboarding';
   static const SPLASH = '/splash';
   static const SIGNUP = '/signup';
+  static const CHILD_SIGNUP = '/child-signup';
   static const WELCOME = '/welcome';
   static const FORGET_PASSWORD = '/forget-password';
   static const OTP = '/otp';
@@ -39,4 +42,5 @@ abstract class _Paths {
   static const PROFILE = '/profile';
   static const SCANNER = '/scanner';
   static const OTP_VERIFICATION = '/otp-verification';
+  static const NOTIFICATIONS = '/notifications';
 }

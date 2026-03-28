@@ -33,4 +33,5 @@ class AppLogos {
   static const String addList = 'assets/logos/addList.svg';
   static const String edit = 'assets/logos/edit.svg';
   static const String trash = 'assets/logos/trash.svg';
+  static const String alerttriangle = 'assets/logos/alert.svg';
 }

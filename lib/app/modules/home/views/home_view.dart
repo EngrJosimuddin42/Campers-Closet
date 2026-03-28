@@ -5,6 +5,7 @@ import 'package:campers_closet/app/modules/home/widgets/event_card.dart';
 import 'package:campers_closet/app/modules/home/widgets/my_closet_card.dart';
 import 'package:campers_closet/app/modules/home/widgets/shop_now_banner.dart';
 import 'package:campers_closet/app/modules/home/widgets/templae_card.dart';
+import 'package:campers_closet/app/modules/notifications/views/notifications_view.dart';
 import 'package:campers_closet/app/widgets/section_header.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:exui/exui.dart';
@@ -13,7 +14,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../profile/views/notification_screen.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -174,7 +174,7 @@ class HomeView extends GetView<HomeController> {
             const Spacer(),
             Obx(() => GestureDetector(
               onTap: () {
-                Get.to(() => const NotificationsScreen());
+                Get.to(() => const NotificationsView());
               },
               behavior: HitTestBehavior.translucent,
               child: Stack(

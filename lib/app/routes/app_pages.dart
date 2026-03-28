@@ -1,5 +1,3 @@
-import 'package:campers_closet/app/modules/scanner/views/scanner_screen.dart';
-import 'package:campers_closet/app/modules/signup/views/otp_verification_view.dart';
 import 'package:get/get.dart';
 
 import '../modules/calendar/bindings/calendar_binding.dart';
@@ -17,12 +15,18 @@ import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
 import '../modules/navbar/bindings/navbar_binding.dart';
 import '../modules/navbar/views/navbar_view.dart';
+import '../modules/notifications/bindings/notifications_binding.dart';
+import '../modules/notifications/views/notifications_view.dart';
 import '../modules/onboarding/bindings/onboarding_binding.dart';
 import '../modules/onboarding/views/onboarding_view.dart';
+import '../modules/profile/bindings/child_signup_binding.dart';
 import '../modules/profile/bindings/profile_binding.dart';
+import '../modules/profile/views/child_signup_view.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/scanner/bindings/scanner_binding.dart';
+import '../modules/scanner/views/scanner_screen.dart';
 import '../modules/signup/bindings/signup_binding.dart';
+import '../modules/signup/views/otp_verification_view.dart';
 import '../modules/signup/views/signup_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
@@ -57,6 +61,11 @@ class AppPages {
       name: _Paths.SIGNUP,
       page: () => const SignupView(),
       binding: SignupBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHILD_SIGNUP,
+      page: () => const ChildSignupView(),
+      binding: ChildSignupBinding(),
     ),
     GetPage(
       name: _Paths.OTP_VERIFICATION,
@@ -112,6 +121,11 @@ class AppPages {
       name: _Paths.SCANNER,
       page: () => const ScannerView(),
       binding: ScannerBinding(),
+    ),
+    GetPage(
+      name: _Paths.NOTIFICATIONS,
+      page: () => const NotificationsView(),
+      binding: NotificationsBinding(),
     ),
   ];
 }

@@ -1,6 +1,10 @@
 import 'package:campers_closet/app/core/network/api_exception.dart';
 import 'package:campers_closet/app/core/utils/api_constants.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/get_navigation/src/snackbar/snackbar.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../services/api_service.dart';
@@ -144,6 +148,74 @@ class AuthRepository {
     }
   }
 
+  // child Signup response
+  Future<void> childSignup({
+    required String email,
+    required String fullName,
+    required String dateOfBirth,
+    required String password,
+    required String passwordConfirm,
+  }) async {
+    try {
+      String formattedDate = dateOfBirth;
+      try {
+        final parts = dateOfBirth.split('/');
+        if (parts.length == 3) {
+          final day = parts[0].padLeft(2, '0');
+          final month = parts[1].padLeft(2, '0');
+          final year = parts[2].length == 2 ? '20${parts[2]}' : parts[2];
+          formattedDate = '$year-$month-$day';
+        }
+      } catch (_) {}
+
+      print('before api call');
+
+      try{
+        final response = await _apiService.post(
+          ApiConstants.childSignup,
+          data: {
+            "email": email,
+            "full_name": fullName,
+            "date_of_birth": formattedDate,
+            "password": password,
+            "password_confirm": passwordConfirm,
+          },
+        );
+        print('resposne: $response');
+
+        final bool success = response.data["success"] ?? false;
+        if (!success) {
+          throw response.data["message"] ?? "Child signup failed";
+        }else{
+          print('child account added successfully');
+          Get.snackbar(
+            'Success',
+            'Child account added successfully!',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+            duration: const Duration(seconds: 3),
+          );
+        }
+        print(response.data);
+        final childData = response.data["data"];
+        print('childData: $childData');
+
+        final box = GetStorage();
+        List<dynamic> childList = box.read('child_accounts') ?? [];
+        childList.add(response.data['data']['user']);
+        await box.write('child_accounts', childList);
+
+      }catch(e){
+        print('error in api call: $e');
+
+      }
+
+    } on DioException catch (e) {
+      throw handleDioError(e);
+    }
+  }
+
   // Forgot Password Response
   Future<void> requestPasswordReset(String email) async {
     try {
@@ -244,6 +316,46 @@ class AuthRepository {
       );
 
       return response.data;
+    } on DioException catch (e) {
+      throw handleDioError(e);
+    }
+  }
+
+  // Change Password Response
+  Future<void> changePassword(Map<String, dynamic> data) async {
+    try {
+      final response = await _apiService.post(
+        ApiConstants.changePassword,
+        data: data,
+      );
+
+      final bool success = response.data["success"] ?? false;
+      if (!success) {
+        throw response.data["message"] ?? "Failed to change password";
+      }
+
+      debugPrint("Password Change Response: ${response.data}");
+    } on DioException catch (e) {
+      throw handleDioError(e);
+    }
+  }
+
+
+  // Delete Account Response
+  Future<void> deleteAccount(String userId) async {
+    try {
+      final String fullUrl = "${ApiConstants.deleteAccount}$userId/";
+
+      final response = await _apiService.delete(fullUrl);
+
+      final bool success = response.data["success"] ?? false;
+      if (!success) {
+        throw response.data["message"] ?? "Failed to delete account";
+      }
+
+      _storage.clearTokens();
+      await GetStorage().remove('user_data');
+
     } on DioException catch (e) {
       throw handleDioError(e);
     }
