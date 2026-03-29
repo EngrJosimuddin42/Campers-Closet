@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../data/repositories/notification_repository.dart';
+import '../../home/controllers/home_controller.dart';
 
 class NotificationsController extends GetxController {
   final NotificationRepository _repo = NotificationRepository();
@@ -41,6 +42,9 @@ class NotificationsController extends GetxController {
           .map((n) => {...n, 'is_read': true})
           .toList();
       notifications.refresh();
+      if (Get.isRegistered<HomeController>()) {
+        Get.find<HomeController>().refreshNotificationCount();
+      }
     } catch (e) {
       notifications.value = notifications
           .map((n) => {...n, 'is_read': true})

@@ -18,7 +18,6 @@ class NavbarView extends StatelessWidget {
   Widget build(BuildContext context) {
     final NavbarController ctrl = Get.find<NavbarController>();
 
-    // Swap placeholders with real screens as you build them
     final List<Widget> pages = [
       HomeView(),
       ClosetView(),
@@ -46,7 +45,9 @@ class NavbarView extends StatelessWidget {
               );
             }),
           ),
+
           bottomNavigationBar: const NavBar(),
+
           floatingActionButton: SizedBox(
             width: 68,
             height: 68,

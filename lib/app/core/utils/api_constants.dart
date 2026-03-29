@@ -9,6 +9,7 @@ class ApiConstants {
   static const profileFetch = "user/profile/";
   static const String deleteAccount = 'user/profile/delete/';
   static const String changePassword = "user/change-password/";
+  static const closetStats = "dashboard/closet/statics/";
 
   static const notifications = "user/notifications/";
   static const notificationsMarkAllRead = "user/notifications/mark-read/";

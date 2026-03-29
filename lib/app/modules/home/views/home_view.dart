@@ -82,14 +82,17 @@ class HomeView extends GetView<HomeController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Good evening, Heather.',
-          style: GoogleFonts.sora(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: AppColors.primaryText,
-          ),
-        ),
+        Obx(() {
+          controller.unreadNotificationCount.value;
+          return Text(
+            '${controller.greetingMessage}, ${controller.userName}.',
+            style: GoogleFonts.sora(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: AppColors.primaryText,
+            ),
+          );
+        }),
         const SizedBox(height: 4),
         Text(
           'Everything you need, packed and ready',

@@ -67,6 +67,7 @@ class LoginController extends GetxController {
       );
 
       Get.offAllNamed(Routes.NAVBAR);
+
     } catch (e) {
       Get.snackbar(
         'Login Failed',
